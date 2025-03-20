@@ -1,0 +1,22 @@
+healthcare-ai-optimizer/
+│
+├── static/
+│   ├── css/
+│   │   ├── bootstrap.min.css
+│   │   ├── styles.css
+│   │
+│   ├── js/
+│   │   ├── bootstrap.bundle.min.js
+│   │   ├── chart.js
+│   │   ├── main.js
+│   │
+│   ├── img/
+│       ├── logo.svg
+│       ├── icons/
+│
+├── templates/
+│   ├── index.html
+│   ├── dashboard.html
+│   ├── documentation.html
+│
+├── app.py (Flask backend)
