@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare AI Query Optimizer</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../static/css/styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <span class="text-primary fw-bold">Healthcare</span> 
+                <span class="text-secondary">AI Optimizer</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="documentation.html">Documentation</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero bg-light py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h1 class="display-4 fw-bold mb-4">Optimize Your Healthcare AI Queries</h1>
+                        <p class="lead mb-4">Our pre-processing layer ensures clarity, privacy, ethical considerations, and inclusivity for medical AI systems.</p>
+                        <a href="#query-form" class="btn btn-primary btn-lg">Try It Now</a>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="https://via.placeholder.com/600x400" alt="Healthcare AI Illustration" class="img-fluid rounded shadow">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features py-5">
+            <div class="container">
+                <h2 class="text-center mb-5">Key Features</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                                    <i class="fas fa-language"></i>
+                                </div>
+                                <h5 class="card-title">Clinical Language Standardization</h5>
+                                <p class="card-text">Converts colloquial descriptions to standardized medical terminology.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <h5 class="card-title">Privacy Protection</h5>
+                                <p class="card-text">Automatically detects and removes patient identifiers while maintaining relevant medical details.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                                    <i class="fas fa-balance-scale"></i>
+                                </div>
+                                <h5 class="card-title">Bias Detection</h5>
+                                <p class="card-text">Identifies and corrects language reflecting unconscious biases in medical queries.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Query Form Section -->
+        <section id="query-form" class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center mb-5">Optimize Your Query</h2>
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="card border-0 shadow">
+                            <div class="card-body p-4">
+                                <form id="optimizer-form">
+                                    <div class="mb-4">
+                                        <label for="query-input" class="form-label">Enter your healthcare query:</label>
+                                        <textarea id="query-input" class="form-control" rows="5" placeholder="Example: pt c/o sob after eating"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="standardize-language" checked>
+                                            <label class="form-check-label" for="standardize-language">Standardize Language</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="remove-pii" checked>
+                                            <label class="form-check-label" for="remove-pii">Remove PII</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="detect-bias" checked>
+                                            <label class="form-check-label" for="detect-bias">Detect Bias</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="ethics-check" checked>
+                                            <label class="form-check-label" for="ethics-check">Ethics Check</label>
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary btn-lg px-4">Optimize Query</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results-section" class="py-5 d-none">
+            <div class="container">
+                <h2 class="text-center mb-5">Optimization Results</h2>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card border-0 shadow mb-4">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="mb-0">Before vs After</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="p-3 bg-light rounded">
+                                            <h6 class="text-muted mb-2">Original Query</h6>
+                                            <p id="original-query" class="mb-0">pt c/o sob after eating</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 bg-success bg-opacity-10 rounded">
+                                            <h6 class="text-muted mb-2">Optimized Query</h6>
+                                            <p id="optimized-query" class="mb-0">Patient complains of shortness of breath after eating</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="mb-0">Changes Made</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Original</th>
+                                                <th>Changed To</th>
+                                                <th>Reason</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="changes-table">
+                                            <tr>
+                                                <td><span class="badge bg-primary">Terminology</span></td>
+                                                <td>pt</td>
+                                                <td>Patient</td>
+                                                <td>Standard medical terminology</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="badge bg-primary">Terminology</span></td>
+                                                <td>c/o</td>
+                                                <td>complains of</td>
+                                                <td>Clinical abbreviation expanded</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="badge bg-primary">Terminology</span></td>
+                                                <td>sob</td>
+                                                <td>shortness of breath</td>
+                                                <td>Clinical abbreviation expanded</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2024 Healthcare AI Query Optimizer</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-white me-3"><i class="fab fa-github"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../static/js/main.js"></script>
+</body>
+</html>
