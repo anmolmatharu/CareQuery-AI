@@ -1,0 +1,243 @@
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize Charts
+  initQueryTypesChart();
+  initOptimizationImpactChart();
+  initBiasHeatmap();
+  
+  // Fetch mock data to update the dashboard
+  fetchDashboardData();
+});
+
+// Initialize Query Types Chart (Doughnut Chart)
+function initQueryTypesChart() {
+  const ctx = document.getElementById('query-types-chart').getContext('2d');
+  
+  const queryTypesChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Clinical Notes', 'Patient Inquiries', 'Diagnostic Queries', 'Treatment Questions', 'Research Queries'],
+      datasets: [{
+        data: [456, 342, 187, 154, 109],
+        backgroundColor: [
+          '#1a73e8',
+          '#34a853',
+          '#fbbc04',
+          '#ea4335',
+          '#6c757d'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            boxWidth: 12,
+            font: {
+              size: 11
+            }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.raw || 0;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = Math.round((value / total) * 100);
+              return `${label}: ${value} (${percentage}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// Initialize Optimization Impact Chart (Bar Chart)
+function initOptimizationImpactChart() {
+  const ctx = document.getElementById('optimization-impact-chart').getContext('2d');
+  
+  const optimizationImpactChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Language Standardization', 'PII Removal', 'Bias Detection', 'Ethics Guardrails'],
+      datasets: [{
+        label: 'Number of Optimizations',
+        data: [876, 632, 317, 89],
+        backgroundColor: [
+          'rgba(26, 115, 232, 0.7)',
+          'rgba(52, 168, 83, 0.7)',
+          'rgba(251, 188, 4, 0.7)',
+          'rgba(234, 67, 53, 0.7)'
+        ],
+        borderColor: [
+          'rgba(26, 115, 232, 1)',
+          'rgba(52, 168, 83, 1)',
+          'rgba(251, 188, 4, 1)',
+          'rgba(234, 67, 53, 1)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Number of Queries'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Optimization Type'
+          }
+        }
+      }
+    }
+  });
+}
+
+// Initialize Bias Heatmap (Matrix representation using Chart.js)
+function initBiasHeatmap() {
+  const ctx = document.getElementById('bias-heatmap').getContext('2d');
+  
+  // Mock data for bias detection by category and demographic
+  const data = {
+    labels: ['Gender', 'Age', 'Race/Ethnicity', 'Socioeconomic', 'Language'],
+    datasets: [
+      {
+        label: 'Clinical',
+        data: [24, 18, 15, 7, 12],
+        backgroundColor: 'rgba(26, 115, 232, 0.7)'
+      },
+      {
+        label: 'Diagnostic',
+        data: [17, 32, 21, 9, 5],
+        backgroundColor: 'rgba(52, 168, 83, 0.7)'
+      },
+      {
+        label: 'Treatment',
+        data: [22, 15, 27, 14, 8],
+        backgroundColor: 'rgba(251, 188, 4, 0.7)'
+      },
+      {
+        label: 'Patient',
+        data: [13, 26, 19, 21, 17],
+        backgroundColor: 'rgba(234, 67, 53, 0.7)'
+      }
+    ]
+  };
+  
+  const biasHeatmap = new Chart(ctx, {
+    type: 'bar',
+    data: data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Bias Detections by Category and Type'
+        },
+        tooltip: {
+          callbacks: {
+            title: function(context) {
+              return `${context[0].dataset.label} - ${context[0].label}`;
+            },
+            label: function(context) {
+              return `Bias detections: ${context.raw}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          stacked: true,
+          title: {
+            display: true,
+            text: 'Bias Type'
+          }
+        },
+        y: {
+          stacked: true,
+          title: {
+            display: true,
+            text: 'Number of Detections'
+          }
+        }
+      }
+    }
+  });
+}
+
+// Fetch mock dashboard data (in a real implementation, this would be an API call)
+function fetchDashboardData() {
+  // Mock data - in a real implementation, this would come from an API
+  const dashboardData = {
+    totalQueries: 1248,
+    piiRemoved: 632,
+    biasDetected: 317,
+    ethicalConcerns: 89,
+    recentActivity: [
+      {
+        time: '10:45 AM',
+        type: 'Clinical',
+        changes: '4 optimizations',
+        status: 'Completed'
+      },
+      {
+        time: '10:32 AM',
+        type: 'Patient Data',
+        changes: '2 PII removed',
+        status: 'Completed'
+      },
+      {
+        time: '10:28 AM',
+        type: 'Diagnostic',
+        changes: '3 optimizations',
+        status: 'Completed'
+      },
+      {
+        time: '10:15 AM',
+        type: 'Treatment',
+        changes: '1 ethical concern',
+        status: 'Review'
+      },
+      {
+        time: '10:05 AM',
+        type: 'Patient Data',
+        changes: '5 optimizations',
+        status: 'Completed'
+      }
+    ]
+  };
+  
+  // Update summary statistics
+  document.getElementById('total-queries').textContent = dashboardData.totalQueries.toLocaleString();
+  document.getElementById('pii-removed').textContent = dashboardData.piiRemoved.toLocaleString();
+  document.getElementById('bias-detected').textContent = dashboardData.biasDetected.toLocaleString();
+  document.getElementById('ethical-concerns').textContent = dashboardData.ethicalConcerns.toLocaleString();
+  
+  // Update recent activity table
+  // Note: In a real implementation, you would clear the table and add new rows
+}
+
+// Add window resize listener to redraw charts on window resize
+window.addEventListener('resize', function() {
+  // Destroy and reinitialize charts to ensure proper resizing
+  // This is a simplified version - in a real implementation you might want to
+  // use Chart.js's built-in responsiveness instead of destroying/recreating
+  setTimeout(function() {
+    initQueryTypesChart();
+    initOptimizationImpactChart();
+    initBiasHeatmap();
+  }, 300);
+});
