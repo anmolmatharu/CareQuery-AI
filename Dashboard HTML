@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Healthcare AI Query Optimizer</title>
+    <title>Documentation - Healthcare AI Query Optimizer</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
@@ -24,192 +24,557 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html">Home</a>
+                        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="dashboard.html">Dashboard</a>
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="documentation.html">Documentation</a>
+                        <a class="nav-link active" href="{{ url_for('documentation') }}">Documentation</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <main class="py-5">
-        <div class="container">
-            <h1 class="mb-4">Analytics Dashboard</h1>
-            
-            <!-- Summary Stats Cards -->
-            <div class="row mb-4">
-                <div class="col-md-3">
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0 me-3">
-                                    <div class="bg-primary bg-opacity-10 p-3 rounded">
-                                        <i class="fas fa-chart-line text-primary"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h6 class="text-muted mb-1">Total Queries</h6>
-                                    <h3 class="mb-0" id="total-queries">1,248</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0 me-3">
-                                    <div class="bg-success bg-opacity-10 p-3 rounded">
-                                        <i class="fas fa-shield-alt text-success"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h6 class="text-muted mb-1">PII Removed</h6>
-                                    <h3 class="mb-0" id="pii-removed">632</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0 me-3">
-                                    <div class="bg-warning bg-opacity-10 p-3 rounded">
-                                        <i class="fas fa-balance-scale text-warning"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h6 class="text-muted mb-1">Bias Detected</h6>
-                                    <h3 class="mb-0" id="bias-detected">317</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0 me-3">
-                                    <div class="bg-danger bg-opacity-10 p-3 rounded">
-                                        <i class="fas fa-exclamation-triangle text-danger"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h6 class="text-muted mb-1">Ethical Concerns</h6>
-                                    <h3 class="mb-0" id="ethical-concerns">89</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-xl-2 px-0 bg-light sidebar">
+                <nav class="position-sticky pt-3 sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#introduction">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Introduction
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#getting-started">
+                                <i class="fas fa-play-circle me-2"></i>
+                                Getting Started
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#features">
+                                <i class="fas fa-list me-2"></i>
+                                Features
+                            </a>
+                            <ul class="nav flex-column ms-3 mb-2">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#clinical-language">Clinical Language</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#privacy-protection">Privacy Protection</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#bias-detection">Bias Detection</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#ethics-guardrails">Ethics Guardrails</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#examples">
+                                <i class="fas fa-code me-2"></i>
+                                Examples
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#api">
+                                <i class="fas fa-plug me-2"></i>
+                                API Reference
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#faq">
+                                <i class="fas fa-question-circle me-2"></i>
+                                FAQ
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
-            
-            <!-- Charts -->
-            <div class="row mb-4">
-                <!-- Query Types Chart -->
-                <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-header bg-white py-3">
-                            <h5 class="card-title mb-0">Query Categories</h5>
+
+            <!-- Main content -->
+            <main class="col-lg-9 col-xl-10 ms-auto px-4 py-5">
+                <section id="introduction" class="mb-5">
+                    <h1 class="border-bottom pb-2 mb-4">Healthcare AI Query Optimizer</h1>
+                    <p class="lead">A pre-processing layer for healthcare professionals and patients that optimizes prompts to medical AI systems, ensuring clarity, privacy, ethical considerations, and inclusivity while improving response quality.</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h4>Why Healthcare AI Optimization Matters</h4>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Complex technical language needing clarity
+                                </li>
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Diverse user populations requiring inclusivity
+                                </li>
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Existing regulatory frameworks for accountability
+                                </li>
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Significant potential for bias that needs addressing
+                                </li>
+                            </ul>
                         </div>
-                        <div class="card-body">
-                            <canvas id="query-types-chart" height="300"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Optimization Impact Chart -->
-                <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-header bg-white py-3">
-                            <h5 class="card-title mb-0">Optimization Impact</h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="optimization-impact-chart" height="300"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row">
-                <!-- Bias Detection Heatmap -->
-                <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-header bg-white py-3">
-                            <h5 class="card-title mb-0">Bias Detection by Category</h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="bias-heatmap" height="300"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Activity -->
-                <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-header bg-white py-3">
-                            <h5 class="card-title mb-0">Recent Optimizations</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Time</th>
-                                            <th>Query Type</th>
-                                            <th>Changes</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="recent-activity">
-                                        <tr>
-                                            <td>10:45 AM</td>
-                                            <td>Clinical</td>
-                                            <td>4 optimizations</td>
-                                            <td><span class="badge bg-success">Completed</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>10:32 AM</td>
-                                            <td>Patient Data</td>
-                                            <td>2 PII removed</td>
-                                            <td><span class="badge bg-success">Completed</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>10:28 AM</td>
-                                            <td>Diagnostic</td>
-                                            <td>3 optimizations</td>
-                                            <td><span class="badge bg-success">Completed</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>10:15 AM</td>
-                                            <td>Treatment</td>
-                                            <td>1 ethical concern</td>
-                                            <td><span class="badge bg-warning">Review</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>10:05 AM</td>
-                                            <td>Patient Data</td>
-                                            <td>5 optimizations</td>
-                                            <td><span class="badge bg-success">Completed</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div class="col-md-6">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-lightbulb text-warning me-2"></i>Did You Know?</h5>
+                                    <p class="card-text">Medical abbreviations and shorthand can vary between specialties and institutions, leading to confusion or errors when used in AI queries. Our standardization system handles over 15,000 common medical abbreviations and terms.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </section>
+
+                <section id="getting-started" class="mb-5">
+                    <h2 class="border-bottom pb-2 mb-4">Getting Started</h2>
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <h4>How to Use the Query Optimizer</h4>
+                            <ol class="list-group list-group-flush mb-4">
+                                <li class="list-group-item bg-transparent d-flex">
+                                    <span class="badge bg-primary rounded-pill me-3">1</span>
+                                    <div>
+                                        <strong>Enter your healthcare query</strong>
+                                        <p class="text-muted mb-0">Type or paste your original query in the text area on the home page.</p>
+                                    </div>
+                                </li>
+                                <li class="list-group-item bg-transparent d-flex">
+                                    <span class="badge bg-primary rounded-pill me-3">2</span>
+                                    <div>
+                                        <strong>Select optimization options</strong>
+                                        <p class="text-muted mb-0">Choose which optimizations to apply (language standardization, PII removal, bias detection, ethics check).</p>
+                                    </div>
+                                </li>
+                                <li class="list-group-item bg-transparent d-flex">
+                                    <span class="badge bg-primary rounded-pill me-3">3</span>
+                                    <div>
+                                        <strong>Click "Optimize Query"</strong>
+                                        <p class="text-muted mb-0">The system will process your query and apply the selected optimizations.</p>
+                                    </div>
+                                </li>
+                                <li class="list-group-item bg-transparent d-flex">
+                                    <span class="badge bg-primary rounded-pill me-3">4</span>
+                                    <div>
+                                        <strong>Review the results</strong>
+                                        <p class="text-muted mb-0">Examine the optimized query and the specific changes made to improve it.</p>
+                                    </div>
+                                </li>
+                                <li class="list-group-item bg-transparent d-flex">
+                                    <span class="badge bg-primary rounded-pill me-3">5</span>
+                                    <div>
+                                        <strong>Use the optimized query</strong>
+                                        <p class="text-muted mb-0">Copy the optimized query for use with your healthcare AI system.</p>
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">Quick Start</h5>
+                                    <p>Try these example queries to see the system in action:</p>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-primary btn-example" data-query="pt c/o sob after eating">
+                                            Clinical Abbreviations
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-example" data-query="help for John Smith, 67yo male with diabetes at 123 Main St">
+                                            PII Detection
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-example" data-query="female patient having emotional response to diagnosis">
+                                            Bias Detection
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="features" class="mb-5">
+                    <h2 class="border-bottom pb-2 mb-4">Key Features</h2>
+                    
+                    <div id="clinical-language" class="feature-section mb-4">
+                        <h3>Clinical Language Standardization</h3>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <p>Our system performs multiple language optimizations to ensure clarity and precision in medical queries:</p>
+                                <ul>
+                                    <li>Corrects grammatical errors in hurried clinician queries</li>
+                                    <li>Converts colloquial patient descriptions to medical terminology</li>
+                                    <li>Standardizes abbreviations and medical shorthand</li>
+                                    <li>Ensures consistent formatting of measurements and units</li>
+                                    <li>Expands acronyms to their full medical terms</li>
+                                </ul>
+                                <div class="card bg-light border-0 mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Example Transformation</h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="text-muted mb-1">Original:</div>
+                                                <div class="p-2 bg-white rounded border">"pt c/o sob after eating"</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="text-muted mb-1">Standardized:</div>
+                                                <div class="p-2 bg-white rounded border">"Patient complains of shortness of breath after eating"</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Behind the Scenes</h5>
+                                        <p class="card-text">Our system uses Azure Text Analytics for Health to recognize medical terminology and Azure Language Understanding to interpret clinical intent.</p>
+                                        <p class="card-text">We maintain a comprehensive database of medical abbreviations, acronyms, and shorthand that is regularly updated based on current medical practices.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="privacy-protection" class="feature-section mb-4">
+                        <h3>Privacy Protection Layer</h3>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <p>Our privacy protection layer safeguards patient information by:</p>
+                                <ul>
+                                    <li>Automatically detecting and removing patient identifiers (names, DOB, addresses)</li>
+                                    <li>Replacing specific identifiers with generic references</li>
+                                    <li>Maintaining relevant medical details while eliminating PII</li>
+                                    <li>Ensuring HIPAA compliance in all processed queries</li>
+                                </ul>
+                                <div class="card bg-light border-0 mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Example Transformation</h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="text-muted mb-1">Original:</div>
+                                                <div class="p-2 bg-white rounded border">"Help me understand treatment options for John Smith, 67-year-old male with diabetes"</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="text-muted mb-1">Privacy Protected:</div>
+                                                <div class="p-2 bg-white rounded border">"Help me understand treatment options for elderly male patient with diabetes"</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">HIPAA Compliance</h5>
+                                        <p class="card-text">Our system is designed to identify and remove the 18 types of protected health information (PHI) specified by HIPAA regulations, including:</p>
+                                        <ul class="small">
+                                            <li>Names of patients and relatives</li>
+                                            <li>Geographic identifiers</li>
+                                            <li>Dates related to an individual</li>
+                                            <li>Phone and fax numbers</li>
+                                            <li>Email addresses</li>
+                                            <li>Social Security numbers</li>
+                                            <li>Medical record numbers</li>
+                                            <li>And more...</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="bias-detection" class="feature-section mb-4">
+                        <h3>Bias Detection and Mitigation</h3>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <p>Our bias detection system works to ensure fairness by:</p>
+                                <ul>
+                                    <li>Identifying and correcting language reflecting unconscious biases</li>
+                                    <li>Ensuring symptoms are described objectively across demographics</li>
+                                    <li>Preventing demographic details from influencing responses when irrelevant</li>
+                                    <li>Promoting inclusive and equitable healthcare language</li>
+                                </ul>
+                                <div class="card bg-light border-0 mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Example Transformation</h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="text-muted mb-1">Original:</div>
+                                                <div class="p-2 bg-white rounded border">"Is this heart condition common in female patients?"</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="text-muted mb-1">Bias Corrected:</div>
+                                                <div class="p-2 bg-white rounded border">"What is the prevalence of this heart condition across different demographic groups?"</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Common Healthcare Biases</h5>
+                                        <p class="card-text">Our system detects and addresses common biases in healthcare contexts:</p>
+                                        <ul class="small">
+                                            <li><strong>Gender bias:</strong> Assuming certain conditions only affect specific genders</li>
+                                            <li><strong>Age bias:</strong> Attributing symptoms to age rather than potential diagnoses</li>
+                                            <li><strong>Race bias:</strong> Using race as a clinical shorthand without medical relevance</li>
+                                            <li><strong>Socioeconomic bias:</strong> Making assumptions about patient compliance or understanding</li>
+                                            <li><strong>Language bias:</strong> Using dismissive terms for patient descriptions of symptoms</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="ethics-guardrails" class="feature-section">
+                        <h3>Medical Ethics Guardrails</h3>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <p>Our ethics guardrails ensure responsible use of healthcare AI by:</p>
+                                <ul>
+                                    <li>Flagging potentially harmful requests (e.g., inappropriate treatments)</li>
+                                    <li>Redirecting requests for medical advice to appropriate diagnostic frameworks</li>
+                                    <li>Ensuring compliance with medical ethics standards</li>
+                                    <li>Preventing misuse of healthcare AI systems</li>
+                                </ul>
+                                <div class="card bg-light border-0 mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Example Transformation</h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="text-muted mb-1">Original:</div>
+                                                <div class="p-2 bg-white rounded border">"How can I prescribe this off-label medication?"</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="text-muted mb-1">Ethically Guided:</div>
+                                                <div class="p-2 bg-white rounded border">"What is the current research and regulatory status regarding this medication for off-label uses?"</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Ethical Principles</h5>
+                                        <p class="card-text">Our ethics guardrails are based on established medical ethics principles:</p>
+                                        <ul class="small">
+                                            <li><strong>Non-maleficence:</strong> First, do no harm</li>
+                                            <li><strong>Beneficence:</strong> Act in the best interest of the patient</li>
+                                            <li><strong>Autonomy:</strong> Respect for the patient's right to make their own decisions</li>
+                                            <li><strong>Justice:</strong> Fair and equitable distribution of benefits and risks</li>
+                                            <li><strong>Informed consent:</strong> Ensuring patients have adequate information</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="examples" class="mb-5">
+                    <h2 class="border-bottom pb-2 mb-4">Examples</h2>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Scenario</th>
+                                    <th>Original Query</th>
+                                    <th>Optimized Query</th>
+                                    <th>Optimizations Applied</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Clinical Notes</td>
+                                    <td>"pt w/ hx of htn presents w/ ha x3d"</td>
+                                    <td>"Patient with history of hypertension presents with headache for 3 days"</td>
+                                    <td>
+                                        <span class="badge bg-primary">Terminology</span>
+                                        <span class="badge bg-info">Abbreviations</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Patient Inquiry</td>
+                                    <td>"can't breath good when laying down at night"</td>
+                                    <td>"Experiencing difficulty breathing when in supine position at night"</td>
+                                    <td>
+                                        <span class="badge bg-primary">Terminology</span>
+                                        <span class="badge bg-success">Grammar</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Privacy Concern</td>
+                                    <td>"Jane Doe, 42F, DOB 05/12/1982, complains of chest pain"</td>
+                                    <td>"Middle-aged female patient complains of chest pain"</td>
+                                    <td>
+                                        <span class="badge bg-warning">PII Removal</span>
+                                        <span class="badge bg-primary">Terminology</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Bias Example</td>
+                                    <td>"Elderly patient is confused and uncooperative"</td>
+                                    <td>"Patient presents with disorientation and difficulty following instructions"</td>
+                                    <td>
+                                        <span class="badge bg-danger">Bias Correction</span>
+                                        <span class="badge bg-primary">Terminology</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Ethical Concern</td>
+                                    <td>"How to convince patient to choose the cheaper treatment option"</td>
+                                    <td>"What are the appropriate ways to discuss treatment cost considerations with patients while respecting autonomy"</td>
+                                    <td>
+                                        <span class="badge bg-dark">Ethics Guardrail</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="api" class="mb-5">
+                    <h2 class="border-bottom pb-2 mb-4">API Reference</h2>
+                    <p>Our Healthcare AI Query Optimizer is available via a RESTful API that allows integration with existing healthcare systems and applications.</p>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">POST /api/optimize</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>Request Body</h6>
+                            <pre class="bg-light p-3 rounded"><code>{
+  "query": "string",
+  "options": {
+    "standardize_language": true,
+    "remove_pii": true,
+    "detect_bias": true,
+    "ethics_check": true
+  }
+}</code></pre>
+
+                            <h6 class="mt-4">Response</h6>
+                            <pre class="bg-light p-3 rounded"><code>{
+  "original_query": "string",
+  "optimized_query": "string",
+  "changes": [
+    {
+      "type": "string",
+      "original": "string",
+      "changed_to": "string",
+      "reason": "string"
+    }
+  ],
+  "metadata": {
+    "processing_time": "number",
+    "confidence_score": "number"
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">GET /api/stats</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>Response</h6>
+                            <pre class="bg-light p-3 rounded"><code>{
+  "total_queries": "number",
+  "pii_removed": "number",
+  "bias_detected": "number",
+  "ethical_concerns": "number",
+  "query_categories": {
+    "clinical": "number",
+    "patient": "number",
+    "diagnostic": "number",
+    "treatment": "number"
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="faq" class="mb-5">
+                    <h2 class="border-bottom pb-2 mb-4">Frequently Asked Questions</h2>
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                    Is my data stored after optimization?
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>No, we do not store the content of your queries. Once the optimization is complete, the data is immediately deleted from our systems. We maintain only anonymized statistics about the types of optimizations performed for system improvement purposes.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                    Is this system HIPAA compliant?
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>Yes, our Healthcare AI Query Optimizer is designed to be HIPAA compliant. We use Azure Information Protection to ensure sensitive data handling meets regulatory requirements. The system is built to identify and remove all 18 types of protected health information specified by HIPAA regulations.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                    Can I customize the optimization settings for my healthcare facility?
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>Yes, enterprise customers can customize the optimization settings to align with their specific needs and workflows. This includes adding specialty-specific terminology, custom abbreviations, and organization-specific privacy rules. Contact our team for more information on enterprise customization.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                                    Which languages are supported?
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>Our current release supports English, Spanish, French, and German, with a focus on standardizing medical terminology across these languages. We are actively working on adding support for additional languages, with priority given to those most commonly used in healthcare settings worldwide.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item border-0 shadow-sm">
+                            <h2 class="accordion-header" id="headingFive">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive">
+                                    How does the system handle medical specialties?
+                                </button>
+                            </h2>
+                            <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>The system recognizes terminology and abbreviations from multiple medical specialties, including cardiology, neurology, oncology, pediatrics, and general practice. For enterprise customers, we offer specialty-specific optimization profiles that can be applied based on the context of the query or user preferences.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
         </div>
-    </main>
+    </div>
 
     <footer class="bg-dark text-white py-4">
         <div class="container">
@@ -228,10 +593,15 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <!-- Custom JS -->
-    <script src="../static/js/main.js"></script>
-    <script src="../static/js/dashboard.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
+                                    High-stakes decisions requiring accuracy
+                                </li>
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Sensitive personal data requiring privacy protection
+                                </li>
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
