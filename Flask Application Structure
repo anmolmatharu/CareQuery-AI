@@ -1,0 +1,415 @@
+import numpy as np
+import tensorflow as tf
+import tensorflow_hub as hub
+import tensorflow_text as text
+import re
+import json
+import os
+from flask import Flask, request, jsonify, render_template
+from azure.ai.textanalytics import TextAnalyticsClient
+from azure.core.credentials import AzureKeyCredential
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input, Dense, Dropout, Concatenate
+from tensorflow.keras.optimizers import Adam
+
+# Dictionary of medical abbreviations
+MEDICAL_ABBREVIATIONS = {
+    "pt": "patient",
+    "c/o": "complains of",
+    "sob": "shortness of breath",
+    "cp": "chest pain",
+    "hx": "history",
+    "dx": "diagnosis",
+    "tx": "treatment",
+    "fx": "fracture",
+    "abd": "abdominal",
+    "hr": "heart rate",
+    "bp": "blood pressure",
+    "temp": "temperature",
+    "lab": "laboratory",
+    "meds": "medications",
+    "pm": "after meals",
+    "prn": "as needed",
+    "stat": "immediately",
+    "bid": "twice daily",
+    "tid": "three times daily",
+    "qid": "four times daily",
+    "po": "by mouth",
+    "iv": "intravenous",
+    "im": "intramuscular",
+    "sc": "subcutaneous",
+    "hs": "at bedtime",
+    "yo": "year old",
+    "y/o": "year old",
+    "f/u": "follow up",
+}
+
+# Azure credentials setup
+def get_azure_text_analytics_client():
+    # Replace with your Azure credentials
+    key = os.environ.get("AZURE_TEXT_ANALYTICS_KEY", "your_key_here")
+    endpoint = os.environ.get("AZURE_TEXT_ANALYTICS_ENDPOINT", "your_endpoint_here")
+
+    # Create a client
+    try:
+        credential = AzureKeyCredential(key)
+        client = TextAnalyticsClient(endpoint=endpoint, credential=credential)
+        return client
+    except Exception as e:
+        print(f"Error creating Azure client: {e}")
+        return None
+
+# Initialize Flask application
+app = Flask(__name__)
+
+# Model variables to be loaded
+grammar_model = None
+medical_standardization_model = None
+
+# Flag to track if we should attempt to use ML models
+use_ml_models = False
+
+# Text preprocessing functions
+def preprocess_text(text):
+    """Basic text preprocessing"""
+    text = text.lower()
+    text = re.sub(r'\\s+', ' ', text)  # Remove extra whitespace
+    text = text.strip()
+    return text
+
+def expand_abbreviations(text):
+    """Expand common medical abbreviations"""
+    words = text.split()
+    expanded_words = []
+
+    for word in words:
+        # Remove punctuation for lookup
+        clean_word = re.sub(r'[^\\w/]', '', word)
+
+        if clean_word.lower() in MEDICAL_ABBREVIATIONS:
+            # Replace with expanded term but keep original punctuation
+            punctuation = re.sub(r'[\\w/]', '', word)
+            expanded_word = MEDICAL_ABBREVIATIONS[clean_word.lower()] + punctuation
+            expanded_words.append(expanded_word)
+        else:
+            expanded_words.append(word)
+
+    return ' '.join(expanded_words)
+
+def standardize_medical_terminology(text, azure_client=None):
+    """Standardize medical terminology using Azure Text Analytics for Health"""
+    if azure_client:
+        try:
+            # Use Azure Text Analytics for Health
+            documents = [text]
+            response = azure_client.analyze_healthcare_entities(documents)
+
+            # Processing the recognized entities
+            result = response[0]
+            if not result.is_error:
+                standardized_text = text
+                for entity in result.entities:
+                    if entity.normalized_text and entity.normalized_text != entity.text:
+                        standardized_text = standardized_text.replace(entity.text, entity.normalized_text)
+                return standardized_text
+        except Exception as e:
+            print(f"Azure Text Analytics error: {e}")
+
+    # Fallback to basic abbreviation expansion if Azure client is not available
+    return expand_abbreviations(text)
+
+def correct_grammar(text):
+    """Apply grammar correction"""
+    # Simple rule-based corrections
+    corrections = [
+        (r'\\bi\\b', 'I'),  # Capitalize 'i'
+        (r'\\s+', ' '),    # Remove extra spaces
+        (r'\\.([a-zA-Z])', '. \\1'),  # Add space after period
+        (r'\\s+\\.', '.'),  # Remove space before period
+    ]
+
+    corrected_text = text
+    for pattern, replacement in corrections:
+        corrected_text = re.sub(pattern, replacement, corrected_text)
+
+    # Ensure first letter is capitalized
+    if corrected_text and len(corrected_text) > 0:
+        corrected_text = corrected_text[0].upper() + corrected_text[1:]
+
+    return corrected_text
+
+def check_harmful_content(text, azure_client=None):
+    """Check for harmful content"""
+    harmful_terms = [
+        "overdose", "bad", "drugs", "illegal drugs", "abuse", "harmful"
+    ]
+
+    for term in harmful_terms:
+        if term in text.lower():
+            return True, f"Potentially harmful content detected: '{term}'"
+
+    return False, ""
+
+def detect_pii(text, azure_client=None):
+    """Detect and handle personally identifiable information"""
+    # Simple pattern matching for common PII
+    pii_patterns = {
+        'ssn': r'\\b\\d{3}[-\\s]?\\d{2}[-\\s]?\\d{4}\\b',
+        'phone': r'\\b\\d{3}[-\\s]?\\d{3}[-\\s]?\\d{4}\\b',
+        'email': r'\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b',
+        'dob': r'\\b(0[1-9]|1[0-2])[-/](0[1-9]|[12][0-9]|3[01])[-/](19|20)\\d{2}\\b',
+        'name': r'\\b(?:Dr\\.|Mr\\.|Mrs\\.|Ms\\.|Miss)\\s+[A-Z][a-z]+\\s+[A-Z][a-z]+\\b|\\b[A-Z][a-z]+\\s+[A-Z][a-z]+\\b'
+    }
+
+    pii_found = {}
+    for pii_type, pattern in pii_patterns.items():
+        matches = re.findall(pattern, text)
+        if matches:
+            pii_found[pii_type] = matches
+
+    # Redact PII from text
+    redacted_text = text
+    for pii_type, matches in pii_found.items():
+        for match in matches:
+            if pii_type == 'ssn':
+                redacted_text = redacted_text.replace(match, "[REDACTED SSN]")
+            elif pii_type == 'phone':
+                redacted_text = redacted_text.replace(match, "[REDACTED PHONE]")
+            elif pii_type == 'email':
+                redacted_text = redacted_text.replace(match, "[REDACTED EMAIL]")
+            elif pii_type == 'dob':
+                redacted_text = redacted_text.replace(match, "[REDACTED DOB]")
+            elif pii_type == 'name':
+                redacted_text = redacted_text.replace(match, "[REDACTED NAME]")
+
+    return redacted_text, len(pii_found) > 0, pii_found
+
+def detect_bias(text):
+    """Detect potentially biased language"""
+    bias_terms = {
+        'gender': [
+            ('hysterical', 'upset'), 
+            ('emotional', 'expressive'),
+            ('female patient having emotional response', 'patient experiencing psychological reaction')
+        ],
+        'age': [
+            ('senile', 'cognitively impaired'),
+            ('elderly and confused', 'older patient with cognitive symptoms')
+        ],
+        'general': [
+            ('non-compliant', 'having difficulty following treatment plan'),
+            ('difficult patient', 'patient with complex needs')
+        ]
+    }
+    
+    biased_terms_found = {}
+    modified_text = text
+    
+    for category, term_pairs in bias_terms.items():
+        for biased_term, suggested_term in term_pairs:
+            if biased_term.lower() in text.lower():
+                if category not in biased_terms_found:
+                    biased_terms_found[category] = []
+                biased_terms_found[category].append({
+                    'original': biased_term, 
+                    'suggested': suggested_term
+                })
+                # Replace the biased term with suggested term
+                pattern = re.compile(re.escape(biased_term), re.IGNORECASE)
+                modified_text = pattern.sub(suggested_term, modified_text)
+    
+    return modified_text, len(biased_terms_found) > 0, biased_terms_found
+
+def process_clinical_text(text, use_azure=False):
+    """Main function to process and standardize clinical text"""
+    # Setup Azure client if needed
+    azure_client = get_azure_text_analytics_client() if use_azure else None
+
+    # Track the processing steps
+    processing_steps = []
+    changes = []
+
+    # Step 1: Preprocess text
+    preprocessed_text = preprocess_text(text)
+    if preprocessed_text != text:
+        processing_steps.append({
+            "step": "Preprocessing",
+            "before": text,
+            "after": preprocessed_text
+        })
+
+    # Step 2: Check for harmful content
+    is_harmful, harmful_msg = check_harmful_content(preprocessed_text, azure_client)
+    if is_harmful:
+        return {
+            "original_query": text,
+            "optimized_query": text,
+            "changes": [],
+            "standardized": False,
+            "error": harmful_msg,
+            "processing_steps": processing_steps
+        }
+
+    # Step 3: Handle PII
+    redacted_text, has_pii, pii_details = detect_pii(preprocessed_text, azure_client)
+    if has_pii:
+        processing_steps.append({
+            "step": "PII Detection",
+            "before": preprocessed_text,
+            "after": redacted_text
+        })
+        
+        for pii_type, instances in pii_details.items():
+            for instance in instances:
+                changes.append({
+                    "type": "Privacy",
+                    "original": instance,
+                    "changed_to": f"[REDACTED {pii_type.upper()}]",
+                    "reason": "PII removed for privacy"
+                })
+        
+        preprocessed_text = redacted_text
+
+    # Step 4: Detect bias
+    unbiased_text, has_bias, bias_details = detect_bias(preprocessed_text)
+    if has_bias:
+        processing_steps.append({
+            "step": "Bias Detection",
+            "before": preprocessed_text,
+            "after": unbiased_text
+        })
+        
+        for category, terms in bias_details.items():
+            for term in terms:
+                changes.append({
+                    "type": "Bias",
+                    "original": term['original'],
+                    "changed_to": term['suggested'],
+                    "reason": f"Potentially biased {category} language"
+                })
+        
+        preprocessed_text = unbiased_text
+
+    # Step 5: Standardize medical terms
+    standardized_text = standardize_medical_terminology(preprocessed_text, azure_client)
+    if standardized_text != preprocessed_text:
+        processing_steps.append({
+            "step": "Medical Terminology Standardization",
+            "before": preprocessed_text,
+            "after": standardized_text
+        })
+        
+        # Find standardized terms
+        original_words = preprocessed_text.split()
+        standardized_words = standardized_text.split()
+        
+        # This is a simple approach - in a real implementation you'd want to use
+        # more sophisticated diff algorithms
+        if len(original_words) == len(standardized_words):
+            for i in range(len(original_words)):
+                if original_words[i] != standardized_words[i]:
+                    changes.append({
+                        "type": "Terminology",
+                        "original": original_words[i],
+                        "changed_to": standardized_words[i],
+                        "reason": "Medical term standardized"
+                    })
+        # Fallback for when word counts don't match - just check each abbreviation
+        else:
+            for abbrev, expanded in MEDICAL_ABBREVIATIONS.items():
+                if abbrev in preprocessed_text.lower() and expanded in standardized_text.lower():
+                    changes.append({
+                        "type": "Terminology",
+                        "original": abbrev,
+                        "changed_to": expanded,
+                        "reason": "Clinical abbreviation expanded"
+                    })
+
+    # Step 6: Correct grammar
+    final_text = correct_grammar(standardized_text)
+    if final_text != standardized_text:
+        processing_steps.append({
+            "step": "Grammar Correction",
+            "before": standardized_text,
+            "after": final_text
+        })
+    
+    return {
+        "original_query": text,
+        "optimized_query": final_text,
+        "changes": changes,
+        "standardized": True,
+        "processing_steps": processing_steps
+    }
+
+# Flask routes
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/documentation')
+def documentation():
+    return render_template('documentation.html')
+
+@app.route('/api/optimize', methods=['POST'])
+def optimize_query():
+    data = request.json
+    clinical_text = data.get('query', '')
+    options = data.get('options', {})
+    
+    use_azure = options.get('use_azure', False)
+    
+    if not clinical_text:
+        return jsonify({"error": "No text provided"}), 400
+    
+    result = process_clinical_text(clinical_text, use_azure)
+    return jsonify(result)
+
+@app.route('/api/examples', methods=['GET'])
+def get_examples():
+    examples = [
+        "pt c/o sob after eating",
+        "pt with hx of mi presents with cp",
+        "f/u pt for lab results",
+        "56 yo m with fever and cough",
+        "pt on abx for uti, f/u in 2d",
+        "Jane Doe, 42F, DOB 05/12/1982, complains of chest pain",
+        "female patient having emotional response to diagnosis",
+        "elderly patient is confused and uncooperative"
+    ]
+    
+    processed_examples = []
+    for example in examples:
+        result = process_clinical_text(example, False)
+        processed_examples.append({
+            "original": example,
+            "processed": result["optimized_query"],
+            "changes": result["changes"]
+        })
+    
+    return jsonify(processed_examples)
+
+# For statistics on the dashboard
+@app.route('/api/stats', methods=['GET'])
+def get_stats():
+    # In a real implementation, these would come from a database
+    stats = {
+        "total_queries": 1248,
+        "pii_removed": 632,
+        "bias_detected": 317,
+        "ethical_concerns": 89,
+        "query_categories": {
+            "clinical": 456,
+            "patient": 342,
+            "diagnostic": 187,
+            "treatment": 154
+        }
+    }
+    return jsonify(stats)
+
+if __name__ == "__main__":
+    app.run(debug=True)
